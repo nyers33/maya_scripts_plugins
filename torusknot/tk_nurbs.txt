@@ -1,0 +1,19 @@
+// torus knot curve node creation and surface generation with extrude
+createNode transform -n tkBezierCurve1;
+$tkBezierCurveTransformNode = `ls -selection`;
+createNode nurbsCurve -n tkBezierCurveShape1 -p $tkBezierCurveTransformNode;
+$tkBezierCurveShapeNode = `ls -selection`;
+createNode tkBezierCurve -n tkBezierCurveNode1;
+$tkBezierCurveNode = `ls -selection`;
+
+setAttr ($tkBezierCurveNode[0] + ".inP") 3;
+setAttr ($tkBezierCurveNode[0] + ".inQ") 2;
+setAttr ($tkBezierCurveNode[0] + ".inDivisions") 64;
+setAttr ($tkBezierCurveNode[0] + ".inOffset") 0.0;
+
+connectAttr ($tkBezierCurveNode[0] + ".outCurve") ($tkBezierCurveShapeNode[0] + ".create");
+
+CreateNURBSCircle;
+setAttr "makeNurbCircle1.radius" 0.4;
+
+extrude -ch true -rn false -po 0 -et 2 -ucp 1 -fpt 1 -upn 1 -rotation 0 -scale 1 -rsp 1 "nurbsCircle1" "tkBezierCurve1" ;
