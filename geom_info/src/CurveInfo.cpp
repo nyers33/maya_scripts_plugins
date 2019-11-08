@@ -60,7 +60,7 @@ MStatus CurveInfo::doIt(const MArgList& argList)
 		ssCV << "control vertices" << std::endl;
 		for (unsigned int iCV = 0; iCV < cvs.length(); ++iCV)
 		{
-			ssCV << cvs[iCV].x << ' ' << cvs[iCV].y << ' ' << cvs[iCV].z << std::endl;
+			ssCV << chop(cvs[iCV].x) << ' ' << chop(cvs[iCV].y) << ' ' << chop(cvs[iCV].z) << std::endl;
 		}
 		ssCV << "end";
 

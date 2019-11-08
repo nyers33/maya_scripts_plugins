@@ -8,6 +8,9 @@
 #include <maya/MObjectArray.h>
 
 #include <maya/MFnMesh.h>
+#include <maya/MItMeshPolygon.h>
+#include <maya/MItMeshEdge.h >
+#include <maya/MItMeshVertex.h>
 
 #include <sstream>
 
@@ -70,8 +73,49 @@ MStatus PolygonInfo::doIt(const MArgList& argList)
 		}
 		ssNormals << "end";
 
+		std::stringstream ssFaces;
+		ssFaces << "faces with vertexIDs" << std::endl;
+
+		MItMeshPolygon faceIter(objects[i], &stat);
+		CHECK_MSTATUS_AND_RETURN_IT(stat);
+		
+		for (; !faceIter.isDone(); faceIter.next())
+		{
+			unsigned int faceID = faceIter.index();
+
+			MItMeshEdge edgeIter(objects[i], faceIter.currentItem());
+			ssFaces << faceID;
+			for (; !edgeIter.isDone(); edgeIter.next())
+			{
+				ssFaces << " | " << edgeIter.index(0) << " - " << edgeIter.index(1);
+			}
+			ssFaces << " with MItMeshEdge"<< std::endl;
+
+			MIntArray faceEdges;
+			faceIter.getEdges(faceEdges);
+			ssFaces << faceID;
+			for (unsigned int iVert = 0; iVert < faceEdges.length(); ++iVert)
+			{
+				int2 edgeVerts;
+				meshFn.getEdgeVertices(faceEdges[iVert], edgeVerts);
+				ssFaces << " | " << edgeVerts[0] << " - " << edgeVerts[1];
+			}
+			ssFaces << " with MItMeshPolygon.getEdges()" << std::endl;
+
+			// with winding order
+			MIntArray faceVerts;
+			faceIter.getVertices(faceVerts);
+			ssFaces << faceID << " |";
+			for (unsigned int iVert = 0; iVert < faceVerts.length(); ++iVert)
+			{
+				ssFaces << " " << faceVerts[iVert];
+			}
+			ssFaces << " with MItMeshPolygon.getVertices()" << std::endl;
+		}
+
 		MGlobal::displayInfo(ssVerts.str().c_str());
 		MGlobal::displayInfo(ssNormals.str().c_str());
+		MGlobal::displayInfo(ssFaces.str().c_str());
 	}
 
 	if (objects.length() == 0)

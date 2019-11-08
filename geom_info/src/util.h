@@ -65,4 +65,12 @@ inline float chop(float value)
 		return value;
 }
 
+inline double chop(double value)
+{
+	if (sgn(value) != sgn(value + FLT_EPSILON) || sgn(value) != sgn(value - FLT_EPSILON))
+		return 0.0f;
+	else
+		return value;
+}
+
 #endif
