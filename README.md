@@ -16,8 +16,10 @@ Tested with Visual Studio 16 2019 (x64) with v140 platform toolset on Autodesk M
 <p align="center"><img src="gerstner_wave/wave_anim.gif" width="480" /></p>
 Performs deformation of the input plane and creates trochoidal / Gerstner waves
 
-## Geom Info
-Debug utility commands for querying curve / polygon / NURBS geometry data
+## CrushGame
+<p align="center"><img src="crushgame/MayaCrushGame_persp.png" height="350"></img> <img src="crushgame/MayaCrushGame_anim.gif" height="350"></img></p>
+
+A match-three puzzle game with Maya primitives
 
 ## Issues:
 * Torus Knot - extruding a profile along the torus knot curve results in a NURBS surface that pinches at the start-end of the curve
