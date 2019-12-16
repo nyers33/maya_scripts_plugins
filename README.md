@@ -18,8 +18,13 @@ Performs deformation of the input plane and creates trochoidal / Gerstner waves
 
 ## CrushGame
 <p align="center"><img src="crushgame/MayaCrushGame_persp.png" height="350"></img> <img src="crushgame/MayaCrushGame_anim.gif" height="350"></img></p>
-
 A match-three puzzle game with Maya primitives
+
+## Pinwheel
+<p align="center"><img src="pinwheel/pinwheel4.png" width="640" /></p>
+<p align="center"><img src="pinwheel/pinwheel5.png" width="640" /></p>
+<p align="center"><img src="pinwheel/pinwheel_ncloth_anim.gif" width="640" /></p>
+Modeling the folding procedure of pinwheels with nCloth
 
 ## Issues:
 * Torus Knot - extruding a profile along the torus knot curve results in a NURBS surface that pinches at the start-end of the curve
