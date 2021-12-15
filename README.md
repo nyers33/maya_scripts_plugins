@@ -29,3 +29,4 @@ Modeling the folding procedure of pinwheels with nCloth
 ## Issues:
 * Torus Knot - extruding a profile along the torus knot curve results in a NURBS surface that pinches at the start-end of the curve
 * Torus Knot - poly torus knot utility generates surface that exhibits polygon flow distortion (TNB frame)
+* Pinwheel - doesn't work with Maya 2022, several issues / bugs

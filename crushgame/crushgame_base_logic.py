@@ -1,12 +1,14 @@
+import sys
+
 import PySide2.QtCore as QtCore
 import PySide2.QtGui as QtGui
 import PySide2.QtWidgets as QtWidgets
 import maya.OpenMayaUI as OpenMayaUI  
 
 try:
-	from shiboken2 import wrapInstance
+    from shiboken2 import wrapInstance
 except:
-	from shiboken import wrapInstance
+    from shiboken import wrapInstance
 
 import maya.cmds as cmds
 
@@ -15,12 +17,15 @@ import maya.cmds as cmds
 def getPyQtMayaWindow():  
     # Get the maya main window as a QMainWindow instance
     accessMainWindow = OpenMayaUI.MQtUtil.mainWindow()
-    return wrapInstance(long(accessMainWindow), QtWidgets.QWidget)
+    if sys.version_info.major >=3:
+        return wrapInstance(int(accessMainWindow), QtWidgets.QWidget)
+    else:
+        return wrapInstance(long(accessMainWindow), QtWidgets.QWidget)
 
 import functools
 import random
 import re
-          
+
 class MayaCrushGame:
     def __init__(self, nX=4, nY=6, nShape=4):
         
@@ -62,7 +67,7 @@ class MayaCrushGame:
         self.nShape = nShape
         
     def setup_game(self, nX=4, nY=6, nShape=4):
-        print 'Game creation started!'
+        print('Game creation started!')
         
         self.set_params(nX, nY, nShape)
         
@@ -88,18 +93,18 @@ class MayaCrushGame:
         if (self.nX < 3 or self.nY < 3):
             return
         
-        print 'Distributing items without matches!'
+        print('Distributing items without matches!')
         while True:
             self.match_items()
             nMatch = self.count_matches()
-            print nMatch
+            print(nMatch)
             self.print_matches()
             if nMatch == 0:
                 break
             else:
                 self.destroy_matches()
                 self.create_dropTable()
-                print 'dropTable'
+                print('dropTable')
                 self.print_dropTable()
                 self.drop_items()
                 self.populate_grid()
@@ -109,19 +114,19 @@ class MayaCrushGame:
             cmds.cutKey( self.items, time=(1, self.currTime-1), attribute='translateY' )
             cmds.cutKey( self.items, time=(1, self.currTime-1), attribute='visibility' )
             cmds.keyframe( self.items, time=(self.currTime,self.currTime),absolute=True, timeChange=1)
-
+            
             for i_item in self.items:
                 if i_item != None:
                     cmds.selectKey( i_item, time=(self.currTime,self.currTime), attribute='visibility' )
                     cmds.cutKey( animation='keys', clear=True)
                     cmds.showHidden( i_item )
-
+            
             self.currTime = 1
             cmds.currentTime( 1 )
-
+    
     def say_hello(self):
-        print 'Hello, World from Game!'
-        
+        print('Hello, World from Game!')
+    
     def create_master_items(self):
         
         shader = cmds.shadingNode( 'lambert', name='lamert_red', asShader=True )
@@ -144,7 +149,7 @@ class MayaCrushGame:
         cmds.connectAttr( 'lambert_blue.outColor', 'lambert_blue_SG.surfaceShader' )
         self.shaders.append(shader)
         self.shading_networks.append(shading_network)
-		
+        
         item_cylinder = cmds.polyCylinder(h=3, r=1, ax=(0,1,0), sx=20, sy=1, sz=4, sc=True, rcp=1, name="itemCylinder")
         cmds.setAttr("{0}.rotate".format(item_cylinder[0]), 0, 0, -45)
         cmds.makeIdentity( apply=True, t=1, r=1, s=1, n=0 )
@@ -202,7 +207,7 @@ class MayaCrushGame:
         cmds.sets( 'itemOctahedron', e=True, forceElement='lambert_white_SG' )
         cmds.hide( 'itemOctahedron' )
         self.shapes.append('itemOctahedron')
-        
+    
     def create_frames(self):
         for x in range(0, self.nX+1):
             cmds.polyPlane(w=self.cellSize*0.5, h=self.cellSize*self.nY, sx=1, sy=1, name="frame_0")
@@ -218,7 +223,7 @@ class MayaCrushGame:
             cmds.setAttr("{0}.rotate".format(selected[0]), 0, 90, 0)
             cmds.setAttr("{0}.translate".format(selected[0]), self.cellSize*0.5*self.nX, self.cellSize*y, 0)
             self.frames.append(selected[0])
-            
+    
     def instance_item(self,tx,ty,tz):
         randID = random.randint(1, self.nShape)
         if randID == 1:
@@ -231,12 +236,12 @@ class MayaCrushGame:
             instanced_item = cmds.instance(self.shapes[3])
         elif randID == 5:
             instanced_item = cmds.instance(self.shapes[4])
-
+    
         cmds.showHidden( instanced_item[0] )
         cmds.setAttr("{0}.translate".format(instanced_item[0]), self.cellSize*0.5+tx, self.cellSize*0.5+ty, tz)
         
         return instanced_item[0]
-        
+    
     def duplicate_item(self,tx,ty,tz):
         randID = random.randint(1, self.nShape)
         if randID == 1:
@@ -254,7 +259,7 @@ class MayaCrushGame:
         cmds.setAttr("{0}.translate".format(duplicated_item[0]), self.cellSize*0.5+tx, self.cellSize*0.5+ty, tz)
         
         return duplicated_item[0]
-
+    
     def populate_grid(self):
         for y in range(0, self.nY*2):
             for x in range(0, self.nX):
@@ -268,8 +273,7 @@ class MayaCrushGame:
                             self.setKeyFrame(self.items[x + y * self.nX], 'visibility', self.currTime, 0)
                         else:
                             self.setKeyFrame(self.items[x + y * self.nX], 'visibility', self.currTime, 1)
-
-                
+    
     def swap_items(self, selected=None):
         if (self.createAnim and self.delayTime > 0):
             self.delay_game()
@@ -277,13 +281,13 @@ class MayaCrushGame:
         if (selected == None or type(selected) is not list):
             selected = cmds.ls(selection=True)
         if len(selected) != 2:
-            print 'Select exactly 2 items!'
+            print('Select exactly 2 items!')
         else:
             for i_sel in selected:
                 if not(i_sel.startswith("item")):
-                    print 'Select items only!'
+                    print('Select items only!')
                     return None
-            print selected
+            print(selected)
             
             # retrieve positions in list
             aID = self.items.index(selected[0])
@@ -302,7 +306,7 @@ class MayaCrushGame:
             if aIDY != self.nY-1:
                 bID_candidate.append(aID+self.nX)
             if bID not in bID_candidate:
-                print 'Select items next to each other!'
+                print('Select items next to each other!')
                 cmds.select( clear=True )
                 return None
             
@@ -313,23 +317,23 @@ class MayaCrushGame:
             
             if self.createAnim:
                 # set swap start key for moving objects
-                print aID
-                print bID
+                print(aID)
+                print(bID)
                 if abs(bID - aID) == 1:
-                    print 'swap in x direction'
+                    print('swap in x direction')
                     self.setKeyFrame( selected[0], 'translateX', self.currTime )
                     self.setKeyFrame( selected[1], 'translateX', self.currTime )
                     self.setKeyFrame( selected[0], 'translateY', self.currTime )
                     self.setKeyFrame( selected[1], 'translateY', self.currTime )
                 else:
-                    print 'swap in y direction'
+                    print('swap in y direction')
                     self.setKeyFrame( selected[0], 'translateX', self.currTime )
                     self.setKeyFrame( selected[1], 'translateX', self.currTime )
                     self.setKeyFrame( selected[0], 'translateY', self.currTime )
                     self.setKeyFrame( selected[1], 'translateY', self.currTime )
                 self.setKeyFrame( selected[0], 'visibility', self.currTime )
                 self.setKeyFrame( selected[1], 'visibility', self.currTime )
-                    
+                
                 # set swap start key for standing objects
                 for y in range(0, 2*self.nY):
                     for x in range(0, self.nX):
@@ -343,7 +347,7 @@ class MayaCrushGame:
             bTranslate = cmds.getAttr("{0}.translate".format(selected[1]), time=self.currTime, type=False)
             cmds.setAttr("{0}.translate".format(selected[0]), type='double3', *(bTranslate[0]))
             cmds.setAttr("{0}.translate".format(selected[1]), type='double3', *(aTranslate[0]))
-                    
+            
             if self.createAnim:
                 # set swap end key for moving objects
                 self.currTime += self.swapTime
@@ -368,7 +372,7 @@ class MayaCrushGame:
         
         if (self.createAnim and self.delayTime > 0):
             self.delay_game()
- 
+    
     def match_items(self):
         # search for matches in horizontal direction
         for y in range(0, self.nY):
@@ -384,14 +388,14 @@ class MayaCrushGame:
                         continue
                     else:
                         self.hMatch[x + y * self.nX] = 1
-                        
+                
                 for x_comp in range(x + 1, self.nX):
                     i_type_comp = self.items[x_comp + y * self.nX][4:].strip("0123456789")
                     if i_type == i_type_comp:
                         self.hMatch[x + y * self.nX] += 1
                     else:
                         break
-                        
+        
         # search for matches in vertical direction
         for x in range(0, self.nX):
             for y in range(0, self.nY):
@@ -406,20 +410,20 @@ class MayaCrushGame:
                         continue
                     else:
                         self.vMatch[x + y * self.nX] = 1
-                        
+                
                 for y_comp in range(y + 1, self.nY):
                     i_type_comp = self.items[x + y_comp * self.nX][4:].strip("0123456789")
                     if i_type == i_type_comp:
                         self.vMatch[x + y * self.nX] += 1
                     else:
                         break
-                        
+    
     def count_matches(self):
         hMatch = len( [elem for elem in self.hMatch if elem > 2] )
         vMatch = len( [elem for elem in self.vMatch if elem > 2] )
-
+        
         return hMatch + vMatch
-                     
+    
     def print_matches(self):
         for y in reversed(range(0, self.nY)):
             hPrint = self.hMatch[(y * self.nX):(y * self.nX + self.nX)]
@@ -430,15 +434,15 @@ class MayaCrushGame:
             for idx, val in enumerate(vPrint):
                 if val < 3:
                     vPrint[idx] = 0
-            print '|' + '|'.join(map(str,[x + y for x, y in zip(hPrint, vPrint)])) + '|'
-                                                                       
+            print('|' + '|'.join(map(str,[x + y for x, y in zip(hPrint, vPrint)])) + '|')
+    
     def destroy_matches(self):
         for y in range(0, self.nY):
             for x in range(0, self.nX):
                 if (self.vMatch[x + y * self.nX]>2 or self.hMatch[x + y * self.nX]>2):
                     cmds.delete( self.items[x + y * self.nX] )
                     self.items[x + y * self.nX] = None
-                    
+    
     def dump_matches(self):
         for y in range(0, self.nY):
             for x in range(0, self.nX):
@@ -446,7 +450,7 @@ class MayaCrushGame:
                     self.dumped_items.append( self.items[x + y * self.nX] )
                     self.setKeyFrame( self.items[x + y * self.nX], 'visibility', self.currTime, 0)
                     self.items[x + y * self.nX] = None
-
+    
     def create_dropTable(self):
         for x in range(0, self.nX):
             self.dropTable[x + 0 * self.nX] = 0
@@ -456,20 +460,20 @@ class MayaCrushGame:
                 self.dropTable[x + y * self.nX] = self.dropTable[x + (y - 1) * self.nX]
                 if self.items[x + (y - 1) * self.nX] == None:
                     self.dropTable[x + y * self.nX] += 1
-                    
+        
         for y in range(0, self.nY):
             for x in range(0, self.nX):
                 if self.items[x + y * self.nX] == None:
                     self.dropTable[x + y * self.nX] = 0
-                                
+    
     def print_dropTable(self):
         for y in reversed(range(0, self.nY*2)):
-            print '|' + '|'.join(map(str,self.dropTable[(y * self.nX):(y * self.nX + self.nX)])) + '|'
+            print('|' + '|'.join(map(str,self.dropTable[(y * self.nX):(y * self.nX + self.nX)])) + '|')
     
     def drop_items(self):
         if (self.createAnim and self.delayTime > 0):
             self.delay_game()
-            
+        
         for y in range(0, self.nY*2):
             for x in range(0, self.nX):
                 item = self.items[x + y * self.nX]
@@ -488,7 +492,7 @@ class MayaCrushGame:
                             self.setKeyFrame( item, 'visibility', self.currTime, 1)
                         else:
                             self.setKeyFrame( item, 'visibility', self.currTime, 0)
-
+                    
                     # set transformation node accordingly
                     cmds.move(-(self.dropTable[x + y * self.nX]*self.cellSize), item, moveY=True, worldSpace=True, relative=True)
                     
@@ -533,11 +537,11 @@ class MayaCrushGame:
         
         if (self.createAnim and self.delayTime > 0):
             self.delay_game()
-            
+    
     def update_game_single(self):
         self.match_items()
         self.print_matches()
-        print self.count_matches()
+        print(self.count_matches())
         self.destroy_matches()
         self.create_dropTable()
         self.drop_items()
@@ -547,7 +551,7 @@ class MayaCrushGame:
         while True:
             self.match_items()
             nMatch = self.count_matches()
-            print nMatch
+            print(nMatch)
             self.print_matches()
             if nMatch == 0:
                 if self.streak == 0:
@@ -562,7 +566,7 @@ class MayaCrushGame:
                 self.drop_items()
                 self.populate_grid()
                 self.streak += 1
-
+    
     def setKeyFrame(self, item, targetAttribute, keyTime, keyValue=None):
         # set key
         if keyValue == None:
@@ -578,7 +582,7 @@ class MayaCrushGame:
     def setKeyFrameSE(self, item, targetAttribute, startTime, endTime, startValue=None, endValue=None):
         # overwrite any existing animations
         cmds.cutKey( item, time=(startTime, endTime), attribute=targetAttribute )
-
+        
         # set keys
         self.setKeyFrame( self, item, targetAttribute, startTime, startValue )
         self.setKeyFrame( self, item, targetAttribute, endTime, endValue )
@@ -633,7 +637,7 @@ class MayaCrushGame:
         self.hMatch = [0] * self.nX * self.nY
         self.vMatch = [0] * self.nX * self.nY
         self.dropTable = [0] * self.nX * self.nY * 2
-        
+
 # This class object is what creates the window, here you can specify what you would like to 
 # go into your custom UI
 class GameDialog(QtWidgets.QDialog):  
@@ -688,7 +692,7 @@ class GameDialog(QtWidgets.QDialog):
         self.game = MayaCrushGame(0,0,4)
         
     def say_hello(self):
-        print 'Hello, World from UI!'
+        print('Hello, World from UI!')
         
     def generate_game(self):
         if(self.nShapeSB.value() > 5):
@@ -703,15 +707,14 @@ class GameDialog(QtWidgets.QDialog):
         self.game.update_game_recursive()
         
     def read_UI(self):
-        print 'nX: %s' % (self.nXSB.value())
-        print 'nY: %s' % (self.nYSB.value())
-        print 'nShape: %s' % (self.nShapeSB.value())
-     
+        print('nX: %s' % (self.nXSB.value()))
+        print('nY: %s' % (self.nYSB.value()))
+        print('nShape: %s' % (self.nShapeSB.value()))
+
 if __name__ == "__main__":
     random.seed(0)
     
     cmds.currentTime( 1 )
     cmds.playbackOptions( maxTime=256 )
-
+    
     GameDialog().show()
- 

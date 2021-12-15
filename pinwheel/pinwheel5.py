@@ -254,7 +254,8 @@ for iCRV in range(5):
 
 # geometry - stitching up the pinwheel
 cmds.select( 'pinwheelGEO1' )
-getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.3, b=1.3, c=1.3 )
+selList = getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.3, b=1.3, c=1.3 )
+selectFromList('pinwheelGEO1', selList, 'vtx')
 cmds.polyMergeVertex( d=0.01 )
 cmds.select( clear=True )
 
@@ -286,7 +287,8 @@ for iCol, iColName in enumerate(['groundPlaneGEO1', 'flattenPlaneGEO1', 'flatten
 # fx - constraint mid section (createNConstraint)
 cmds.select( clear=True )
 cmds.select( 'pinwheelGEO1' )
-getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.1, b=1.1, c=1.1 )
+selList = getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.1, b=1.1, c=1.1 )
+selectFromList('pinwheelGEO1', selList, 'vtx')
 mel.eval( 'createNConstraint transform 0' )
 
 # fx - constraint tips (createNConstraint)
@@ -295,7 +297,8 @@ for iCRV in range(5):
 	cmds.select( 'pinwheelGEO1' )
 	foldPlane = [ om.MVector( (-math.cos(-iCRV*2.0/5.0*math.pi)), 0 , (-math.sin(-iCRV*2.0/5.0*math.pi)) ).normal(), -0.001 ]
 	crossPlane = [ om.MVector( (math.sin(-iCRV*2.0/5.0*math.pi)), 0 , (-math.cos(-iCRV*2.0/5.0*math.pi)) ).normal(), (3.0+rad*0.25*(1.0+math.sqrt(5.0)))/(0.25*(1.0+math.sqrt(5.0))) - foldSize/2.0 ]
-	getVertsPlane( [ crossPlane, foldPlane ] )
+	selList = getVertsPlane( [ crossPlane, foldPlane ] )
+	selectFromList('pinwheelGEO1', selList, 'vtx')
 	cmds.select( 'folderGEO'+str(iCRV+1), tgl=True )
 	mel.eval( 'createNConstraint transform 0' )
 

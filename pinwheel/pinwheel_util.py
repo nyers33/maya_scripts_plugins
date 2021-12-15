@@ -66,10 +66,10 @@ def getEdgesPlane( planes ):
 	selection_list.getDagPath(0, dag_path, component)
 	mItEdge = om.MItMeshEdge( dag_path )
 	if not component.isNull():
-		print "not NULL"
+		print("not NULL")
 		if (component.apiType() == om.MFn.kMeshEdgeComponent):
 			mItEdge = om.MItMeshEdge( dag_path, component )
-			print "OK"
+			print("OK")
 	cmds.select( clear=True )
 	compEdge = om.MObject()
 	for iPlane in planes:
@@ -161,3 +161,8 @@ def getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.0, b=1.0, c=1.0 ):
 	add_sel_vtx.add( dag_path, compVtx )
 	om.MGlobal.setActiveSelectionList(add_sel_vtx)
 	return vtxList
+
+def selectFromList( name, selList, element='vtx' ):
+	cmds.select( clear=True )
+	for i in selList:
+		cmds.select(name+'.'+element+'['+str(i)+']', add=True)

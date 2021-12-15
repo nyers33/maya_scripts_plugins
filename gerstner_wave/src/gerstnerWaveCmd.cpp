@@ -75,7 +75,7 @@ MStatus gerstnerWaveCmd::doIt(const MArgList &args)
 	MObject origMesh = dagMesh.node();
 	MFnDependencyNode meshFn(origMesh);
 
-	MPlug inMeshPlug = meshFn.findPlug("inMesh");
+	MPlug inMeshPlug = meshFn.findPlug("inMesh", true);
 	MPlug outMeshPlug;
 
 	MPlugArray conns;
@@ -98,10 +98,10 @@ MStatus gerstnerWaveCmd::doIt(const MArgList &args)
 
 		// set to intermediate object
 		meshFn.setObject(intermediate);
-		MPlug intermediatePlug = fnMesh.findPlug("intermediateObject");
+		MPlug intermediatePlug = fnMesh.findPlug("intermediateObject", true);
 		intermediatePlug.setValue(true);
 
-		outMeshPlug = fnMesh.findPlug("outMesh");
+		outMeshPlug = fnMesh.findPlug("outMesh", true);
 	}
 
 	// create and connect seExprNode
@@ -109,17 +109,17 @@ MStatus gerstnerWaveCmd::doIt(const MArgList &args)
 	MFnDependencyNode gwMeshNodeFn(gwNode);
 	MString nodeName = gwMeshNodeFn.name();
 
-	dgMod.connect(outMeshPlug, gwMeshNodeFn.findPlug("inMesh"));
-	dgMod.connect(gwMeshNodeFn.findPlug("outMesh"), inMeshPlug);
+	dgMod.connect(outMeshPlug, gwMeshNodeFn.findPlug("inMesh", true));
+	dgMod.connect(gwMeshNodeFn.findPlug("outMesh", true), inMeshPlug);
 
 	// set initial value
-	gwMeshNodeFn.findPlug("envelope").setValue(env);
+	gwMeshNodeFn.findPlug("envelope", true).setValue(env);
 
 	// connect to time
 	MObject timeNode;
 	getTimeNode(timeNode);
 	MFnDependencyNode fnTime(timeNode);
-	dgMod.connect(fnTime.findPlug("outTime"), gwMeshNodeFn.findPlug("time"));
+	dgMod.connect(fnTime.findPlug("outTime", true), gwMeshNodeFn.findPlug("time", true));
 
 	// set result (node name)
 	clearResult();

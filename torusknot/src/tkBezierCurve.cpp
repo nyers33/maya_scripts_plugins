@@ -75,7 +75,8 @@ MStatus tkBezierCurve::initialize()
 	}
 	numericAttr.setStorable(true);
 	
-	outCurve = typedAttr.create("outCurve", "out", MFnNurbsCurveData::kNurbsCurve, &stat);
+	MObject defaultData = MObject::kNullObj;
+	outCurve = typedAttr.create("outCurve", "out", MFnNurbsCurveData::kNurbsCurve, defaultData, &stat);
 	if ( !stat ) {
 		stat.perror("ERROR creating tkBezierCurve curve attribute");
 		return stat;
