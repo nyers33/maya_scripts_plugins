@@ -35,7 +35,7 @@ def getVertsPlane( planes ):
 			mItVtx.getConnectedFaces(faceList)
 			mFnCompFace = om.MFnSingleIndexedComponent()
 			compFace = mFnCompFace.create(om.MFn.kMeshPolygonComponent)
-			map(mFnCompFace.addElement, faceList)
+			[mFnCompFace.addElement(x) for x in faceList]
 			mItPoly = om.MItMeshPolygon( dag_path, compFace )
 			mItVtx.next()
 			dist = distPointPlane( point, iPlane )
@@ -50,7 +50,7 @@ def getVertsPlane( planes ):
 				mItPoly.next()
 		mFnCompVtx = om.MFnSingleIndexedComponent()
 		compVtx = mFnCompVtx.create(om.MFn.kMeshVertComponent)
-		map(mFnCompVtx.addElement, vtxList)
+		[mFnCompVtx.addElement(x) for x in vtxList]
 		mItVtx.reset( dag_path, compVtx )
 	add_sel_vtx = om.MSelectionList()
 	add_sel_vtx.add( dag_path, compVtx )
@@ -84,7 +84,7 @@ def getEdgesPlane( planes ):
 			edgeList.append(edgeId)
 		mFnCompEdge = om.MFnSingleIndexedComponent()
 		compEdge = mFnCompEdge.create(om.MFn.kMeshEdgeComponent)
-		map(mFnCompEdge.addElement, edgeList)
+		[mFnCompEdge.addElement(x) for x in edgeList]
 		mItEdge.reset( dag_path, compEdge )
 	add_sel_edge = om.MSelectionList()
 	add_sel_edge.add( dag_path, compEdge )
@@ -126,7 +126,7 @@ def getVertsBB( xMin=-1.0, xMax=1.0, yMin=-1.0, yMax=1.0, zMin=-1.0, zMax=1.0 ):
 		vtxList.append(vtxId)
 	mFnCompVtx = om.MFnSingleIndexedComponent()
 	compVtx = mFnCompVtx.create(om.MFn.kMeshVertComponent)
-	map(mFnCompVtx.addElement, vtxList)
+	[mFnCompVtx.addElement(x) for x in vtxList]
 	add_sel_vtx = om.MSelectionList()
 	add_sel_vtx.add( dag_path, compVtx )
 	om.MGlobal.setActiveSelectionList(add_sel_vtx)
@@ -156,7 +156,7 @@ def getVertsEllipsoid( xCtr=0.0, yCtr=0.0, zCtr=0.0, a=1.0, b=1.0, c=1.0 ):
 			vtxList.append(vtxId)
 	mFnCompVtx = om.MFnSingleIndexedComponent()
 	compVtx = mFnCompVtx.create(om.MFn.kMeshVertComponent)
-	map(mFnCompVtx.addElement, vtxList)
+	[mFnCompVtx.addElement(x) for x in vtxList]
 	add_sel_vtx = om.MSelectionList()
 	add_sel_vtx.add( dag_path, compVtx )
 	om.MGlobal.setActiveSelectionList(add_sel_vtx)
